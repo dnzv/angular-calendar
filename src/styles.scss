@@ -1,1 +1,165 @@
-/* You can add global styles to this file, and also import other style files */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  html {
+    font-size: 62.5%;
+  }
+  
+  body {
+    font-family: "Lato", sans-serif;
+    font-weight: 400;
+    font-size: 1.6rem;
+    line-height: 1.7;
+    padding: 3rem;
+    background-color: #eee;
+  }
+
+$calendar-bg-color: #fff;
+$disabled-day-color: #bbb;
+$day-color: #222;
+$weekend-color: #666;
+$weekday-title-color: #333;
+$month-title-color: #333;
+$selected-day-color: #b3ecff;
+$highlighted-day-color: lighten(orangered, 10);
+
+@mixin debug {
+    border: 1px solid black;
+  }
+  
+  @mixin before {
+    &::before {
+      content: "";
+      background-color: $selected-day-color;
+      display: inline-block;
+      position: absolute;
+      width: 10px;
+      height: 40px;
+      right: 40px;
+      z-index: -1;
+    }
+  }
+  
+  @mixin after {
+    &::after {
+      content: "";
+      background-color: $selected-day-color;
+      display: inline-block;
+      position: absolute;
+      width: 30px;
+      height: 40px;
+      left: 20px;
+      z-index: -1;
+    }
+  }
+  
+  @mixin selected($position: null) {
+    background-color: $selected-day-color;
+  
+    @if $position == start {
+      border-radius: 100px 0 0 100px;
+    }
+    @if $position == end {
+      border-radius: 0 100px 100px 0;
+    }
+    @if $position == middle {
+      border-radius: 0;
+    }
+    @if $position == null {
+      border-radius: 100px;
+    }
+  }
+  
+  @mixin range($position) {
+    @if $position == start or $position == middle {
+      @include after;
+    }
+    @if $position == end or $position == middle {
+      @include before;
+    }
+    @include selected($position);
+  }
+
+  .calendar {
+    background-color: $calendar-bg-color;
+    display: inline-block;
+    padding: 10px;
+    box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.2);
+  
+    .cal {
+      color: $disabled-day-color;
+      border-collapse: separate;
+      border-spacing: 0 4px;
+  
+      tr th,
+      tr td {
+        width: 60px;
+        height: 40px;
+        text-align: center;
+        vertical-align: middle;
+        //@include debug;
+      }
+  
+      &--title {
+        color: $month-title-color;
+        font-size: 2rem;
+        & > tr > th {
+          text-align: left;
+          padding-left: 22px;
+          padding-bottom: 6px;
+        }
+      }
+  
+      &--weekdays {
+        font-weight: bold;
+        color: $weekday-title-color;
+      }
+  
+      &--days {
+        tr td div {
+          width: 40px;
+          height: 40px;
+          line-height: 40px;
+          display: inline-block;
+        }
+  
+        .current-month {
+          color: $day-color;
+  
+          & > div {
+            position: relative;
+            z-index: 0;
+  
+            &.selected {
+              @include selected();
+            }
+  
+            &.start {
+              @include range(start);
+            }
+  
+            &.middle {
+              @include range(middle);
+            }
+  
+            &.end {
+              @include range(end);
+            }
+  
+            div:hover {
+              cursor: pointer;
+              @include selected();
+              background-color: $highlighted-day-color;
+            }
+          }
+        }
+  
+        .weekend {
+          color: $weekend-color;
+        }
+      }
+    }
+  }  
