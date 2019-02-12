@@ -20,7 +20,7 @@
 $calendar-bg-color: #fff;
 $disabled-day-color: #bbb;
 $day-color: #222;
-$weekend-color: #666;
+$weekend-color: #808080;
 $weekday-title-color: #333;
 $month-title-color: #333;
 $selected-day-color: #b3ecff;
@@ -93,6 +93,7 @@ $highlighted-day-color: lighten(orangered, 10);
       color: $disabled-day-color;
       border-collapse: separate;
       border-spacing: 0 4px;
+      font-weight: 200;
   
       tr th,
       tr td {
@@ -107,6 +108,7 @@ $highlighted-day-color: lighten(orangered, 10);
         color: $month-title-color;
         font-size: 2rem;
         & > tr > th {
+          font-weight: 700;
           text-align: left;
           padding-left: 22px;
           padding-bottom: 6px;
@@ -114,8 +116,10 @@ $highlighted-day-color: lighten(orangered, 10);
       }
   
       &--weekdays {
-        font-weight: bold;
-        color: $weekday-title-color;
+        & > tr > th {
+          font-weight: 700;
+          color: $weekday-title-color;
+        }
       }
   
       &--days {
@@ -128,6 +132,7 @@ $highlighted-day-color: lighten(orangered, 10);
   
         .current-month {
           color: $day-color;
+          font-weight: 400;
   
           & > div {
             position: relative;
