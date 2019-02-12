@@ -29,33 +29,7 @@ $highlighted-day-color: lighten(orangered, 10);
 @mixin debug {
     border: 1px solid black;
   }
-  
-  @mixin before {
-    &::before {
-      content: "";
-      background-color: $selected-day-color;
-      display: inline-block;
-      position: absolute;
-      width: 10px;
-      height: 40px;
-      right: 40px;
-      z-index: -1;
-    }
-  }
-  
-  @mixin after {
-    &::after {
-      content: "";
-      background-color: $selected-day-color;
-      display: inline-block;
-      position: absolute;
-      width: 30px;
-      height: 40px;
-      left: 20px;
-      z-index: -1;
-    }
-  }
-  
+
   @mixin selected($position: null) {
     background-color: $selected-day-color;
   
@@ -73,14 +47,30 @@ $highlighted-day-color: lighten(orangered, 10);
     }
   }
   
-  @mixin range($position) {
-    @if $position == start or $position == middle {
-      @include after;
+  @mixin before {
+    &::before {
+      content: "";
+      background-color: $selected-day-color;
+      display: inline-block;
+      position: absolute;
+      width: 30px;
+      height: 40px;
+      right: 20px;
+      z-index: -1;
     }
-    @if $position == end or $position == middle {
-      @include before;
+  }
+  
+  @mixin after {
+    &::after {
+      content: "";
+      background-color: $selected-day-color;
+      display: inline-block;
+      position: absolute;
+      width: 30px;
+      height: 40px;
+      left: 20px;
+      z-index: -1;
     }
-    @include selected($position);
   }
 
   .calendar {
@@ -101,7 +91,7 @@ $highlighted-day-color: lighten(orangered, 10);
         height: 40px;
         text-align: center;
         vertical-align: middle;
-        //@include debug;
+        // @include debug;
       }
   
       &--title {
@@ -110,8 +100,8 @@ $highlighted-day-color: lighten(orangered, 10);
         & > tr > th {
           font-weight: 700;
           text-align: left;
-          padding-left: 22px;
-          padding-bottom: 6px;
+          padding-left: 20px;
+          //padding-bottom: 6px;
         }
       }
   
@@ -142,16 +132,16 @@ $highlighted-day-color: lighten(orangered, 10);
               @include selected();
             }
   
-            &.start {
-              @include range(start);
+            &.before {
+              @include before();
             }
-  
+
+            &.after {
+              @include after();
+            }
+
             &.middle {
-              @include range(middle);
-            }
-  
-            &.end {
-              @include range(end);
+              @include selected(middle);
             }
   
             div:hover {

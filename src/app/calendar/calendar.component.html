@@ -2,163 +2,20 @@
   <table class="cal">
     <thead class="cal--title">
       <tr>
-        <th colspan="7">January</th>
+        <th colspan="7">{{month}}</th>
       </tr>
     </thead>
     <thead class="cal--weekdays">
       <tr>
-        <th>M</th>
-        <th>T</th>
-        <th>W</th>
-        <th>T</th>
-        <th>F</th>
-        <th>S</th>
-        <th>S</th>
+        <th *ngFor="let weekday of weekdays">{{weekday}}</th>
       </tr>
     </thead>
     <tbody class="cal--days">
-      <tr>
-        <td>
-          <div>31</div>
-        </td>
-        <td class="current-month">
-          <div>1</div>
-        </td>
-        <td class="current-month">
-          <div>2</div>
-        </td>
-        <td class="current-month">
-          <div>3</div>
-        </td>
-        <td class="current-month">
-          <div>4</div>
-        </td>
-        <td class="current-month weekend">
-          <div>5</div>
-        </td>
-        <td class="current-month weekend">
-          <div>6</div>
-        </td>
-      </tr>
-      <tr>
-        <td class="current-month">
-          <div class="selected">7</div>
-        </td>
-        <td class="current-month">
-          <div>8</div>
-        </td>
-        <td class="current-month">
-          <div class="start">
-            <div>9</div>
+      <tr *ngFor="let week of weeks">
+        <td *ngFor="let day of week" [ngClass]="{'current-month': !day.disabled, 'weekend': day.weekend}">
+          <div [ngClass]="{'selected': day.selected, 'before': day.before, 'after': day.after, 'middle': day.middle}">
+            <div>{{day.value}}</div>
           </div>
-        </td>
-        <td class="current-month">
-          <div class="middle">
-            <div>10</div>
-          </div>
-        </td>
-        <td class="current-month">
-          <div class="end">
-            <div>11</div>
-          </div>
-        </td>
-        <td class="current-month weekend">
-          <div>12</div>
-        </td>
-        <td class="current-month weekend">
-          <div>13</div>
-        </td>
-      </tr>
-      <tr>
-        <td class="current-month">
-          <div>14</div>
-        </td>
-        <td class="current-month">
-          <div>15</div>
-        </td>
-        <td class="current-month">
-          <div>16</div>
-        </td>
-        <td class="current-month">
-          <div>17</div>
-        </td>
-        <td class="current-month">
-          <div>18</div>
-        </td>
-        <td class="current-month weekend">
-          <div>19</div>
-        </td>
-        <td class="current-month weekend">
-          <div>20</div>
-        </td>
-      </tr>
-      <tr>
-        <td class="current-month">
-          <div>21</div>
-        </td>
-        <td class="current-month">
-          <div>22</div>
-        </td>
-        <td class="current-month">
-          <div>23</div>
-        </td>
-        <td class="current-month">
-          <div>24</div>
-        </td>
-        <td class="current-month">
-          <div>25</div>
-        </td>
-        <td class="current-month weekend">
-          <div>26</div>
-        </td>
-        <td class="current-month weekend">
-          <div>27</div>
-        </td>
-      </tr>
-      <tr>
-        <td class="current-month">
-          <div>28</div>
-        </td>
-        <td class="current-month">
-          <div>29</div>
-        </td>
-        <td class="current-month">
-          <div>30</div>
-        </td>
-        <td class="current-month">
-          <div>31</div>
-        </td>
-        <td>
-          <div>1</div>
-        </td>
-        <td>
-          <div>2</div>
-        </td>
-        <td>
-          <div>3</div>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <div>4</div>
-        </td>
-        <td>
-          <div>5</div>
-        </td>
-        <td>
-          <div>6</div>
-        </td>
-        <td>
-          <div>7</div>
-        </td>
-        <td>
-          <div>8</div>
-        </td>
-        <td>
-          <div>9</div>
-        </td>
-        <td>
-          <div>10</div>
         </td>
       </tr>
     </tbody>
