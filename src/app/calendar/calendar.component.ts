@@ -1,15 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { start } from 'repl';
 
 interface CalendarDay {
-  value: number;
+  value?: number;
   selected?: boolean;
   disabled?: boolean;
   weekend?: boolean;
   before?: boolean;
   after?: boolean;
   middle?: boolean;
-};
+}
+
 @Component({
   selector: 'app-calendar',
   templateUrl: './calendar.component.html',
@@ -17,17 +17,77 @@ interface CalendarDay {
 })
 export class CalendarComponent implements OnInit {
 
-  constructor() { }
-
-  ngOnInit() {
-  }
-
   JSON = JSON;
   start: CalendarDay;
   end: CalendarDay;
   first: CalendarDay;
   second: CalendarDay;
   selected: CalendarDay[] = [];
+
+  month = 'January';
+  weekdays = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+  weeks: Array<Array<CalendarDay>> = [
+    [
+      { disabled: true, value: 31 },
+      { value: 1 },
+      { value: 2 },
+      { value: 3 },
+      { value: 4 },
+      { value: 5, weekend: true },
+      { value: 6, weekend: true },
+    ],
+    [
+      { value: 7 },
+      { value: 8 },
+      { value: 9 },
+      { value: 10 },
+      { value: 11 },
+      { value: 12, weekend: true },
+      { value: 13, weekend: true },
+    ],
+    [
+      { value: 14 },
+      { value: 15 },
+      { value: 16 },
+      { value: 17 },
+      { value: 18 },
+      { value: 19, weekend: true },
+      { value: 20, weekend: true },
+    ],
+    [
+      { value: 21 },
+      { value: 22 },
+      { value: 23 },
+      { value: 24 },
+      { value: 25 },
+      { value: 26, weekend: true },
+      { value: 27, weekend: true },
+    ],
+    [
+      { value: 28 },
+      { value: 29 },
+      { value: 30 },
+      { value: 31 },
+      { disabled: true, value: 1 },
+      { disabled: true, value: 2 },
+      { disabled: true, value: 3 },
+    ],
+    [
+      { disabled: true, value: 4 },
+      { disabled: true, value: 5 },
+      { disabled: true, value: 6 },
+      { disabled: true, value: 7 },
+      { disabled: true, value: 8 },
+      { disabled: true, value: 9 },
+      { disabled: true, value: 10 },
+    ],
+  ];
+
+  constructor() {
+  }
+
+  ngOnInit() {
+  }
 
   onSelect(day: CalendarDay) {
     if (this.first) {
@@ -88,78 +148,24 @@ export class CalendarComponent implements OnInit {
       day.before = false;
       day.middle = false;
       day.after = false;
-    })
+    });
     this.selected = [];
   }
 
   findIndex(day: CalendarDay): number {
-    if (!day) return -1;
+    if (!day) {
+      return -1;
+    }
     const merged = [].concat.apply([], this.weeks);
     for (let i = 0; i < merged.length; i++) {
-      if (!merged[i].disabled && merged[i].value === day.value) return i;
+      if (!merged[i].disabled && merged[i].value === day.value) {
+        return i;
+      }
     }
     return -1;
   }
 
-  month = 'January';
-
-  weekdays = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-
-  weeks: Array<Array<CalendarDay>> = [
-    [
-      { disabled: true, value: 31 },
-      { value: 1 },
-      { value: 2 },
-      { value: 3 },
-      { value: 4 },
-      { value: 5, weekend: true },
-      { value: 6, weekend: true },
-    ],
-    [
-      { value: 7 },
-      { value: 8 },
-      { value: 9 },
-      { value: 10 },
-      { value: 11 },
-      { value: 12, weekend: true },
-      { value: 13, weekend: true },
-    ],
-    [
-      { value: 14 },
-      { value: 15 },
-      { value: 16 },
-      { value: 17 },
-      { value: 18 },
-      { value: 19, weekend: true },
-      { value: 20, weekend: true },
-    ],
-    [
-      { value: 21 },
-      { value: 22 },
-      { value: 23 },
-      { value: 24 },
-      { value: 25 },
-      { value: 26, weekend: true },
-      { value: 27, weekend: true },
-    ],
-    [
-      { value: 28 },
-      { value: 29 },
-      { value: 30 },
-      { value: 31 },
-      { disabled: true, value: 1 },
-      { disabled: true, value: 2 },
-      { disabled: true, value: 3 },
-    ],
-    [
-      { disabled: true, value: 4 },
-      { disabled: true, value: 5 },
-      { disabled: true, value: 6 },
-      { disabled: true, value: 7 },
-      { disabled: true, value: 8 },
-      { disabled: true, value: 9 },
-      { disabled: true, value: 10 },
-    ],
-  ]
-
+  isCurrentMonth(day: CalendarDay): boolean {
+    return day.value && !day.disabled;
+  }
 }

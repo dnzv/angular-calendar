@@ -1,20 +1,20 @@
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  
-  html {
-    font-size: 62.5%;
-  }
-  
-  body {
-    font-family: "Lato", sans-serif;
-    font-weight: 400;
-    font-size: 1.6rem;
-    line-height: 1.7;
-    background-color: #eee;
-  }
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 62.5%;
+}
+
+body {
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 1.6rem;
+  line-height: 1.7;
+  background-color: #eee;
+}
 
 $calendar-bg-color: #fff;
 $disabled-day-color: #bbb;
@@ -26,134 +26,135 @@ $selected-day-color: #b3ecff;
 $highlighted-day-color: lighten(orangered, 10);
 
 @mixin debug {
-    border: 1px solid black;
-  }
+  border: 1px solid black;
+}
 
-  @mixin selected($position: null) {
+@mixin selected($position: null, $color: $selected-day-color) {
+  background-color: $selected-day-color;
+
+  @if $position == start {
+    border-radius: 100px 0 0 100px;
+  }
+  @if $position == end {
+    border-radius: 0 100px 100px 0;
+  }
+  @if $position == middle {
+    border-radius: 0;
+  }
+  @if $position == null {
+    border-radius: 100px;
+  }
+}
+
+@mixin before {
+  &::before {
+    content: "";
     background-color: $selected-day-color;
-  
-    @if $position == start {
-      border-radius: 100px 0 0 100px;
-    }
-    @if $position == end {
-      border-radius: 0 100px 100px 0;
-    }
-    @if $position == middle {
-      border-radius: 0;
-    }
-    @if $position == null {
-      border-radius: 100px;
-    }
-  }
-  
-  @mixin before {
-    &::before {
-      content: "";
-      background-color: $selected-day-color;
-      display: inline-block;
-      position: absolute;
-      width: 30px;
-      height: 40px;
-      right: 20px;
-      z-index: -1;
-    }
-  }
-  
-  @mixin after {
-    &::after {
-      content: "";
-      background-color: $selected-day-color;
-      display: inline-block;
-      position: absolute;
-      width: 30px;
-      height: 40px;
-      left: 20px;
-      z-index: -1;
-    }
-  }
-
-  .calendar {
-    background-color: $calendar-bg-color;
     display: inline-block;
-    padding: 10px;
-    box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.2);
-  
-    .cal {
-      color: $disabled-day-color;
-      border-collapse: separate;
-      border-spacing: 0 4px;
-      font-weight: 200;
-  
-      tr th,
-      tr td {
-        width: 60px;
+    position: absolute;
+    width: 30px;
+    height: 40px;
+    right: 20px;
+    z-index: -1;
+  }
+}
+
+@mixin after {
+  &::after {
+    content: "";
+    background-color: $selected-day-color;
+    display: inline-block;
+    position: absolute;
+    width: 30px;
+    height: 40px;
+    left: 20px;
+    z-index: -1;
+  }
+}
+
+.calendar {
+  background-color: $calendar-bg-color;
+  display: inline-block;
+  padding: 10px;
+  box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.2);
+
+  .cal {
+    color: $disabled-day-color;
+    border-collapse: separate;
+    border-spacing: 0 4px;
+    font-weight: 200;
+
+    tr th,
+    tr td {
+      width: 60px;
+      height: 40px;
+      text-align: center;
+      vertical-align: middle;
+      //@include debug;
+    }
+
+    &--title {
+      color: $month-title-color;
+      font-size: 2rem;
+
+      & > tr > th {
+        font-weight: 700;
+        text-align: left;
+        padding-left: 20px;
+        //padding-bottom: 6px;
+      }
+    }
+
+    &--weekdays {
+      & > tr > th {
+        font-weight: 700;
+        color: $weekday-title-color;
+      }
+    }
+
+    &--days {
+      tr td div {
+        width: 40px;
         height: 40px;
-        text-align: center;
-        vertical-align: middle;
-        // @include debug;
+        line-height: 40px;
+        display: inline-block;
       }
-  
-      &--title {
-        color: $month-title-color;
-        font-size: 2rem;
-        & > tr > th {
-          font-weight: 700;
-          text-align: left;
-          padding-left: 20px;
-          //padding-bottom: 6px;
-        }
-      }
-  
-      &--weekdays {
-        & > tr > th {
-          font-weight: 700;
-          color: $weekday-title-color;
-        }
-      }
-  
-      &--days {
-        tr td div {
-          width: 40px;
-          height: 40px;
-          line-height: 40px;
-          display: inline-block;
-        }
-  
-        .current-month {
-          color: $day-color;
-          font-weight: 400;
-  
-          & > div {
-            position: relative;
-            z-index: 0;
-  
-            &.selected {
-              @include selected();
-            }
-  
-            &.before {
-              @include before();
-            }
 
-            &.after {
-              @include after();
-            }
+      .current-month {
+        color: $day-color;
+        font-weight: 400;
 
-            &.middle {
-              @include selected(middle);
-            }
-  
-            div:hover {
-              cursor: pointer;
-              @include selected();
-              background-color: $highlighted-day-color;
-            }
+        & > div {
+          position: relative;
+          z-index: 0;
+
+          &.selected {
+            @include selected();
+          }
+
+          &.before {
+            @include before();
+          }
+
+          &.after {
+            @include after();
+          }
+
+          &.middle {
+            @include selected(middle);
+          }
+
+          div:hover {
+            cursor: pointer;
+            @include selected();
+            background-color: $highlighted-day-color;
           }
         }
-  
-        .weekend {
-          color: $weekend-color;
-        }
+      }
+
+      .weekend {
+        color: $weekend-color;
       }
     }
-  }  
+  }
+}

@@ -1,24 +1,24 @@
 <div class="calendar">
   <table class="cal">
     <thead class="cal--title">
-      <tr>
-        <th colspan="7">{{month}}</th>
-      </tr>
+    <tr>
+      <th colspan="7">{{month}}</th>
+    </tr>
     </thead>
     <thead class="cal--weekdays">
-      <tr>
-        <th *ngFor="let weekday of weekdays">{{weekday}}</th>
-      </tr>
+    <tr>
+      <th *ngFor="let weekday of weekdays">{{weekday}}</th>
+    </tr>
     </thead>
     <tbody class="cal--days">
-      <tr *ngFor="let week of weeks">
-        <td *ngFor="let day of week" [ngClass]="{'current-month': !day.disabled, 'weekend': day.weekend}">
-          <div (click)="onSelect(day)" (mouseover)="onHover(day)"
-            [ngClass]="{'selected': day.selected, 'before': day.before, 'after': day.after, 'middle': day.middle}">
-            <div>{{day.value}}</div>
-          </div>
-        </td>
-      </tr>
+    <tr *ngFor="let week of weeks">
+      <td *ngFor="let day of week" [ngClass]="{'current-month': isCurrentMonth(day), 'weekend': day.weekend}">
+        <div (click)="isCurrentMonth(day) && onSelect(day)" (mouseover)="isCurrentMonth(day) && onHover(day)"
+             [ngClass]="{'selected': day.selected, 'before': day.before, 'after': day.after, 'middle': day.middle}">
+          <div>{{day.value}}</div>
+        </div>
+      </td>
+    </tr>
     </tbody>
   </table>
 </div>
