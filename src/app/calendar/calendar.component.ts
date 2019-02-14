@@ -1,5 +1,15 @@
 import { Component, OnInit } from '@angular/core';
+import { start } from 'repl';
 
+interface CalendarDay {
+  value: number;
+  selected?: boolean;
+  disabled?: boolean;
+  weekend?: boolean;
+  before?: boolean;
+  after?: boolean;
+  middle?: boolean;
+};
 @Component({
   selector: 'app-calendar',
   templateUrl: './calendar.component.html',
@@ -12,11 +22,90 @@ export class CalendarComponent implements OnInit {
   ngOnInit() {
   }
 
+  JSON = JSON;
+  start: CalendarDay;
+  end: CalendarDay;
+  first: CalendarDay;
+  second: CalendarDay;
+  selected: CalendarDay[] = [];
+
+  onSelect(day: CalendarDay) {
+    if (this.first) {
+      this.start = this.first.value <= day.value ? this.first : day;
+      this.end = this.first.value > day.value ? this.first : day;
+      this.foo(this.start, this.end);
+      this.first = null;
+      this.second = null;
+    } else {
+      this.resetSelected();
+      this.start = null;
+      this.end = null;
+      this.first = day;
+      this.first.selected = true;
+    }
+  }
+
+  onHover(day: CalendarDay) {
+    if (this.first) {
+      this.second = day;
+      this.foo(this.first, this.second);
+    }
+  }
+
+  foo(first: CalendarDay, second: CalendarDay) {
+    const firstIndex = this.findIndex(first);
+    const secondIndex = this.findIndex(second);
+
+    const startIndex = Math.min(firstIndex, secondIndex);
+    const endIndex = Math.max(firstIndex, secondIndex);
+
+    this.resetSelected();
+
+    const weekLen = 7;
+    for (let i = Math.floor(startIndex / weekLen); i <= Math.floor(endIndex / weekLen); i++) {
+
+      for (let j = 0; j < weekLen; j++) {
+        const flatIndex = i * weekLen + j;
+        if (flatIndex >= startIndex && flatIndex <= endIndex) {
+          const day = this.weeks[i][j];
+          this.selected.push(day);
+          day.selected = true;
+          if (j - 1 >= 0 && this.weeks[i][j - 1].selected) {
+            day.before = true;
+            this.weeks[i][j - 1].after = true;
+          }
+          if (day.value !== first.value && day.value !== second.value) {
+            day.middle = true;
+          }
+        }
+      }
+    }
+  }
+
+  resetSelected() {
+    this.selected.forEach(day => {
+      day.selected = false;
+      day.before = false;
+      day.middle = false;
+      day.after = false;
+    })
+    this.selected = [];
+  }
+
+  findIndex(day: CalendarDay): number {
+    if (!day) return -1;
+    const merged = [].concat.apply([], this.weeks);
+    for (let i = 0; i < merged.length; i++) {
+      if (!merged[i].disabled && merged[i].value === day.value) return i;
+    }
+    return -1;
+  }
+
   month = 'January';
 
   weekdays = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
-  weeks = [
+  weeks: Array<Array<CalendarDay>> = [
     [
       { disabled: true, value: 31 },
       { value: 1 },
@@ -27,7 +116,7 @@ export class CalendarComponent implements OnInit {
       { value: 6, weekend: true },
     ],
     [
-      { value: 7, selected: true },
+      { value: 7 },
       { value: 8 },
       { value: 9 },
       { value: 10 },
@@ -41,13 +130,13 @@ export class CalendarComponent implements OnInit {
       { value: 16 },
       { value: 17 },
       { value: 18 },
-      { value: 19, weekend: true, selected: true, after: true },
-      { value: 20, weekend: true, middle: true, before: true },
+      { value: 19, weekend: true },
+      { value: 20, weekend: true },
     ],
     [
-      { value: 21, middle: true, after: true },
-      { value: 22, middle: true, before: true, after: true },
-      { value: 23, selected: true, before: true },
+      { value: 21 },
+      { value: 22 },
+      { value: 23 },
       { value: 24 },
       { value: 25 },
       { value: 26, weekend: true },

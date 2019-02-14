@@ -13,7 +13,8 @@
     <tbody class="cal--days">
       <tr *ngFor="let week of weeks">
         <td *ngFor="let day of week" [ngClass]="{'current-month': !day.disabled, 'weekend': day.weekend}">
-          <div [ngClass]="{'selected': day.selected, 'before': day.before, 'after': day.after, 'middle': day.middle}">
+          <div (click)="onSelect(day)" (mouseover)="onHover(day)"
+            [ngClass]="{'selected': day.selected, 'before': day.before, 'after': day.after, 'middle': day.middle}">
             <div>{{day.value}}</div>
           </div>
         </td>
