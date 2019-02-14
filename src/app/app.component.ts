@@ -12,7 +12,22 @@ export class AppComponent {
   days: CalendarDay[] = [
     {
       day: 1,
+      color: '#66ff99',
+      range: true
+    },
+    {
+      day: 2,
+      color: '#66ff99',
+      range: true
+    },
+    {
+      day: 3,
+      color: '#66ff99',
+      range: true
+    },
+    {
+      day: 4,
       color: '#66ff99'
-    }
+    },
   ];
 }

@@ -25,6 +25,8 @@ interface Day {
   customColor?: string;
 }
 
+type Week = Day[];
+
 @Component({
   selector: 'app-calendar',
   templateUrl: './calendar.component.html',
@@ -47,7 +49,20 @@ export class CalendarComponent implements OnInit, OnChanges {
 
   monthName = 'January';
   weekdays = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-  weeks: Day[][] = [];
+  weeks: Week[] = [];
+
+  static setRange(week: Week, index: number, start: Day, end: Day, color: string = null) {
+    const day = week[index];
+    day.selected = true;
+    day.customColor = color;
+    if (index - 1 >= 0 && week[index - 1].selected) {
+      day.before = true;
+      week[index - 1].after = true;
+    }
+    if (day.value !== start.value && day.value !== end.value) {
+      day.middle = true;
+    }
+  }
 
   constructor() {
   }
@@ -71,10 +86,16 @@ export class CalendarComponent implements OnInit, OnChanges {
     this.monthName = format(monthStart, 'MMMM', { locale: nl });
     this.monthName = this.monthName.charAt(0).toUpperCase() + this.monthName.slice(1);
 
-    this.weeks = [];
+    this.weeks = this.initWeeks();
+
+    this.setInputDays();
+  }
+
+  initWeeks(): Week[] {
+    const weeks = [];
     let currentDate = new Date(this.startDate);
     while (!isAfter(currentDate, this.endDate)) {
-      const week: Day[] = [];
+      const week: Week = [];
       for (let i = 0; i < 7; i++) {
         const currentDay = currentDate.getDate();
         const currentMonth = currentDate.getMonth();
@@ -86,14 +107,18 @@ export class CalendarComponent implements OnInit, OnChanges {
         });
         currentDate = addDays(currentDate, 1);
       }
-      this.weeks.push(week);
+      weeks.push(week);
     }
+    return weeks;
+  }
 
+  setInputDays() {
+    // TODO: divide the days into range and single.
     (this.days || []).forEach(d => {
-      const foundDay = this.find(d.day, this.month);
-      if (foundDay) {
-        foundDay.selected = true;
-        foundDay.customColor = d.color;
+      const found = this.findDay(d.day, this.month);
+      if (found) {
+        found.selected = true;
+        found.customColor = d.color;
       }
     });
   }
@@ -142,18 +167,11 @@ export class CalendarComponent implements OnInit, OnChanges {
     for (let i = Math.floor(startIndex / weekLen); i <= Math.floor(endIndex / weekLen); i++) {
 
       for (let j = 0; j < weekLen; j++) {
+        const week = this.weeks[i];
         const flatIndex = i * weekLen + j;
         if (flatIndex >= startIndex && flatIndex <= endIndex) {
-          const day = this.weeks[i][j];
-          this.selected.push(day);
-          day.selected = true;
-          if (j - 1 >= 0 && this.weeks[i][j - 1].selected) {
-            day.before = true;
-            this.weeks[i][j - 1].after = true;
-          }
-          if (day.value !== first.value && day.value !== second.value) {
-            day.middle = true;
-          }
+          this.selected.push(week[j]);
+          CalendarComponent.setRange(week, j, first, second);
         }
       }
     }
@@ -184,9 +202,19 @@ export class CalendarComponent implements OnInit, OnChanges {
     return -1;
   }
 
-  find(day: number, month: number): Day {
+  findDay(day: number, month: number): Day {
     const merged = this.mergeWeeks();
     return merged.find(d => d.value === day && d.month === month);
+  }
+
+  findWeek(day: number, month: number): Week {
+    for (let i = 0; i < this.weeks.length; i++) {
+      for (let j = 0; j < this.weeks[i].length; j++) {
+        if (this.weeks[i][j].value === day && this.weeks[i][j].month === month) {
+          return this.weeks[i];
+        }
+      }
+    }
   }
 
   mergeWeeks(): Day[] {
