@@ -1,4 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit } from '@angular/core';
+import { addDays, endOfISOWeek, endOfMonth, format, isAfter, isWeekend, startOfISOWeek } from 'date-fns';
+import { Month } from '../month.enum';
+import nl from 'date-fns/locale/nl';
 
 interface CalendarDay {
   value?: number;
@@ -16,7 +19,7 @@ interface CalendarDay {
   templateUrl: './calendar.component.html',
   styleUrls: ['./calendar.component.scss']
 })
-export class CalendarComponent implements OnInit {
+export class CalendarComponent implements OnInit, OnChanges {
 
   start: CalendarDay;
   end: CalendarDay;
@@ -24,69 +27,52 @@ export class CalendarComponent implements OnInit {
   second: CalendarDay;
   selected: CalendarDay[] = [];
 
-  month = 'January';
+  @Input() month: Month = Month.January;
+  @Input() year = 2019;
+
+  startDate: Date;
+  endDate: Date;
+
+  monthName = 'January';
   weekdays = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-  weeks: Array<Array<CalendarDay>> = [
-    [
-      { disabled: true, value: 31 },
-      { value: 1 },
-      { value: 2 },
-      { value: 3 },
-      { value: 4 },
-      { value: 5, weekend: true },
-      { value: 6, weekend: true },
-    ],
-    [
-      { value: 7 },
-      { value: 8 },
-      { value: 9 },
-      { value: 10 },
-      { value: 11 },
-      { value: 12, weekend: true },
-      { value: 13, weekend: true },
-    ],
-    [
-      { value: 14 },
-      { value: 15 },
-      { value: 16 },
-      { value: 17 },
-      { value: 18 },
-      { value: 19, weekend: true },
-      { value: 20, weekend: true },
-    ],
-    [
-      { value: 21 },
-      { value: 22 },
-      { value: 23 },
-      { value: 24 },
-      { value: 25 },
-      { value: 26, weekend: true },
-      { value: 27, weekend: true },
-    ],
-    [
-      { value: 28 },
-      { value: 29 },
-      { value: 30 },
-      { value: 31 },
-      { disabled: true, value: 1 },
-      { disabled: true, value: 2 },
-      { disabled: true, value: 3 },
-    ],
-    [
-      { disabled: true, value: 4 },
-      { disabled: true, value: 5 },
-      { disabled: true, value: 6 },
-      { disabled: true, value: 7 },
-      { disabled: true, value: 8 },
-      { disabled: true, value: 9 },
-      { disabled: true, value: 10 },
-    ],
-  ];
+  weeks: CalendarDay[][] = [];
 
   constructor() {
   }
 
   ngOnInit() {
+    this.setWeeks();
+  }
+
+  ngOnChanges() {
+    this.setWeeks();
+  }
+
+  setWeeks() {
+    const monthStart = new Date(this.year, this.month, 1);
+    const monthEnd = endOfMonth(monthStart);
+    this.startDate = startOfISOWeek(monthStart);
+    this.endDate = endOfISOWeek(addDays(endOfISOWeek(monthEnd), 1));
+
+    this.monthName = format(monthStart, 'MMMM', { locale: nl });
+    this.monthName = this.monthName.charAt(0).toUpperCase() + this.monthName.slice(1);
+
+    this.weeks = [];
+    let currentDate = new Date(this.startDate);
+    while (!isAfter(currentDate, this.endDate)) {
+      const week: CalendarDay[] = [];
+      for (let i = 0; i < 7; i++) {
+        const currentDay = currentDate.getDate();
+        const currentMonth = currentDate.getMonth();
+        week.push({
+          value: currentDay,
+          disabled: currentMonth !== this.month,
+          weekend: currentMonth === this.month && isWeekend(currentDate)
+        });
+        currentDate = addDays(currentDate, 1);
+      }
+      this.weeks.push(week);
+    }
   }
 
   onSelect(day: CalendarDay) {
