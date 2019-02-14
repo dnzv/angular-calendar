@@ -14,8 +14,10 @@
     <tbody class="cal--days">
     <tr *ngFor="let week of weeks">
       <td *ngFor="let day of week" [ngClass]="{'current-month': isCurrentMonth(day), 'weekend': day.weekend}">
-        <div (click)="isCurrentMonth(day) && onSelect(day)" (mouseover)="isCurrentMonth(day) && onHover(day)"
-             [ngClass]="{'selected': day.selected, 'before': day.before, 'after': day.after, 'middle': day.middle}">
+        <div [ngClass]="{'selected': day.selected, 'before': day.before, 'after': day.after, 'middle': day.middle}"
+             [ngStyle]="{'background-color': day.customColor}"
+             (click)="isCurrentMonth(day) && onSelect(day)"
+             (mouseover)="isCurrentMonth(day) && onHover(day)">
           <div [ngClass]="{'range': day.range}">{{day.value}}</div>
         </div>
       </td>
