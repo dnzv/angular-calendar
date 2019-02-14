@@ -15,7 +15,7 @@
       <td *ngFor="let day of week" [ngClass]="{'current-month': isCurrentMonth(day), 'weekend': day.weekend}">
         <div (click)="isCurrentMonth(day) && onSelect(day)" (mouseover)="isCurrentMonth(day) && onHover(day)"
              [ngClass]="{'selected': day.selected, 'before': day.before, 'after': day.after, 'middle': day.middle}">
-          <div>{{day.value}}</div>
+          <div [ngClass]="{'range': day.range}">{{day.value}}</div>
         </div>
       </td>
     </tr>

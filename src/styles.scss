@@ -19,18 +19,18 @@ body {
 $calendar-bg-color: #fff;
 $disabled-day-color: #bbb;
 $day-color: #222;
-$weekend-color: #808080;
+$weekend-color: lighten($day-color, 30%);
 $weekday-title-color: #333;
 $month-title-color: #333;
 $selected-day-color: #b3ecff;
-$highlighted-day-color: lighten(orangered, 10);
+$highlighted-day-color: lighten(orangered, 15%);
 
 @mixin debug {
   border: 1px solid black;
 }
 
 @mixin selected($position: null, $color: $selected-day-color) {
-  background-color: $selected-day-color;
+  background-color: $color;
 
   @if $position == start {
     border-radius: 100px 0 0 100px;
@@ -144,10 +144,13 @@ $highlighted-day-color: lighten(orangered, 10);
             @include selected(middle);
           }
 
+          div.range {
+            @include selected(null, darken($selected-day-color, 20%));
+          }
+
           div:hover {
             cursor: pointer;
-            @include selected();
-            background-color: $highlighted-day-color;
+            @include selected(null, $highlighted-day-color);
           }
         }
       }

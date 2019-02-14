@@ -8,6 +8,7 @@ interface CalendarDay {
   before?: boolean;
   after?: boolean;
   middle?: boolean;
+  range?: boolean;
 }
 
 @Component({
@@ -17,7 +18,6 @@ interface CalendarDay {
 })
 export class CalendarComponent implements OnInit {
 
-  JSON = JSON;
   start: CalendarDay;
   end: CalendarDay;
   first: CalendarDay;
@@ -101,7 +101,6 @@ export class CalendarComponent implements OnInit {
       this.start = null;
       this.end = null;
       this.first = day;
-      this.first.selected = true;
     }
   }
 
@@ -120,6 +119,15 @@ export class CalendarComponent implements OnInit {
     const endIndex = Math.max(firstIndex, secondIndex);
 
     this.resetSelected();
+
+    if (first.value === second.value) {
+      first.selected = true;
+      this.selected.push(first);
+      return;
+    }
+
+    first.range = true;
+    second.range = true;
 
     const weekLen = 7;
     for (let i = Math.floor(startIndex / weekLen); i <= Math.floor(endIndex / weekLen); i++) {
@@ -148,6 +156,7 @@ export class CalendarComponent implements OnInit {
       day.before = false;
       day.middle = false;
       day.after = false;
+      day.range = false;
     });
     this.selected = [];
   }
