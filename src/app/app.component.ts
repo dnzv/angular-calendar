@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Month } from './month.enum';
-import { CalendarDay } from './calendar-day';
+import { CalendarInput } from './calendar-input';
 
 @Component({
   selector: 'app-root',
@@ -9,25 +9,16 @@ import { CalendarDay } from './calendar-day';
 })
 export class AppComponent {
   Month = Month;
-  days: CalendarDay[] = [
+  days: CalendarInput[] = [
     {
-      day: 1,
-      color: '#66ff99',
-      range: true
-    },
-    {
-      day: 2,
-      color: '#66ff99',
-      range: true
-    },
-    {
-      day: 3,
-      color: '#66ff99',
-      range: true
-    },
-    {
-      day: 4,
+      start: new Date(2019, 0, 1),
+      end: new Date(2019, 0, 3),
       color: '#66ff99'
+    },
+    {
+      start: new Date(2019, 0, 4),
+      end: new Date(2019, 0, 4),
+      color: '#ffa366'
     },
   ];
 }

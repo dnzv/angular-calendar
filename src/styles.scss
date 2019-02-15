@@ -49,7 +49,7 @@ $highlighted-day-color: lighten(orangered, 15%);
 @mixin before {
   &::before {
     content: "";
-    background-color: $selected-day-color;
+    background-color: inherit;
     display: inline-block;
     position: absolute;
     width: 30px;
@@ -62,7 +62,7 @@ $highlighted-day-color: lighten(orangered, 15%);
 @mixin after {
   &::after {
     content: "";
-    background-color: $selected-day-color;
+    background-color: inherit;
     display: inline-block;
     position: absolute;
     width: 30px;
@@ -151,8 +151,11 @@ $highlighted-day-color: lighten(orangered, 15%);
             @include selected(middle);
           }
 
-          div.range {
-            @include selected(null, darken($selected-day-color, 20%));
+          div.selected {
+            @include selected();
+            &.range {
+              background-color: darken($selected-day-color, 20%);
+            }
           }
 
           div:hover {

@@ -18,7 +18,8 @@
              [ngStyle]="{'background-color': day.customColor}"
              (click)="isCurrentMonth(day) && onSelect(day)"
              (mouseover)="isCurrentMonth(day) && onHover(day)">
-          <div [ngClass]="{'range': day.range}">{{day.value}}</div>
+          <div [ngClass]="{'selected': day.selected, 'range': day.range}"
+               [ngStyle]="{'background-color': day.customColor}">{{day.value}}</div>
         </div>
       </td>
     </tr>
