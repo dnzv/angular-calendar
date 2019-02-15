@@ -1,24 +1,31 @@
 <div class="calendar">
   <table class="cal">
-    <thead class="cal--title">
+    <thead class="cal--header">
     <tr>
-      <th class="title-month" colspan="5">{{monthName}}</th>
-      <th class="title-year" colspan="2">{{year}}</th>
+      <th *ngIf="showWeekNumbers"></th>
+      <th [colSpan]="7">
+        <div class="title">
+          <div class="title--month">{{monthName}}</div>
+          <div class="title--year">{{year}}</div>
+        </div>
+      </th>
     </tr>
     </thead>
     <thead class="cal--weekdays">
     <tr>
+      <th *ngIf="showWeekNumbers"></th>
       <th *ngFor="let weekday of weekdays">{{weekday}}</th>
     </tr>
     </thead>
     <tbody class="cal--days">
     <tr *ngFor="let week of weeks">
-      <td *ngFor="let day of week" [ngClass]="{'current-month': isCurrentMonth(day), 'weekend': day.weekend}">
+      <td *ngIf="showWeekNumbers" class="week-number">{{week.isoValue}}</td>
+      <td *ngFor="let day of week.days" [ngClass]="{'current-month': isCurrentMonth(day), 'weekend': day.weekend}">
         <div [ngClass]="{'selected': day.selected, 'before': day.before, 'after': day.after, 'middle': day.middle}"
              [ngStyle]="{'background-color': day.color}"
              (click)="isCurrentMonth(day) && onSelect(day)"
              (mouseover)="isCurrentMonth(day) && onHover(day)">
-          <div [ngClass]="{'selected': day.selected, 'hide': hide && !isCurrentMonth(day)}">
+          <div [ngClass]="{'selected': day.selected, 'hide': onlyShowCurrentMonth && !isCurrentMonth(day)}">
             {{day.value}}
           </div>
         </div>

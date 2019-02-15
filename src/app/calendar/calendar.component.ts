@@ -4,7 +4,7 @@ import {
   differenceInCalendarISOWeeks,
   endOfISOWeek,
   endOfMonth,
-  format,
+  format, getISOWeek,
   isAfter,
   isWeekend,
   startOfISOWeek
@@ -26,7 +26,10 @@ interface CalendarDay {
   color?: string;
 }
 
-type Week = CalendarDay[];
+interface CalendarWeek {
+  isoValue: number;
+  days: CalendarDay[];
+}
 
 @Component({
   selector: 'app-calendar',
@@ -45,27 +48,15 @@ export class CalendarComponent implements OnInit, OnChanges {
   @Input() month;
   @Input() year;
   @Input() days: CalendarInput[];
-  @Input() hide = false;
+  @Input() onlyShowCurrentMonth = false;
+  @Input() showWeekNumbers = false;
 
   calendarStartDate: Date;
   calendarEndDate: Date;
 
   monthName = 'January';
   weekdays = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-  weeks: Week[] = [];
-
-  static setRange(week: Week, index: number, start: CalendarDay, end: CalendarDay, color: string = CalendarComponent.selectionColor) {
-    const day = week[index];
-    day.selected = true;
-    day.color = color;
-    if (index - 1 >= 0 && week[index - 1].selected) {
-      day.before = true;
-      week[index - 1].after = true;
-    }
-    if (day.value !== start.value && day.value !== end.value) {
-      day.middle = true;
-    }
-  }
+  weeks: CalendarWeek[] = [];
 
   constructor() {
   }
@@ -97,15 +88,15 @@ export class CalendarComponent implements OnInit, OnChanges {
     this.setInputDays();
   }
 
-  initWeeks(start: Date = this.calendarStartDate, end: Date = this.calendarEndDate): Week[] {
+  initWeeks(start: Date = this.calendarStartDate, end: Date = this.calendarEndDate): CalendarWeek[] {
     const weeks = [];
     let currentDate = new Date(start);
     while (!isAfter(currentDate, end)) {
-      const week: Week = [];
+      const week: CalendarWeek = { days: [], isoValue: getISOWeek(currentDate) };
       for (let i = 0; i < 7; i++) {
         const currentDay = currentDate.getDate();
         const currentMonth = currentDate.getMonth();
-        week.push({
+        week.days.push({
           value: currentDay,
           month: currentMonth,
           disabled: currentMonth !== this.month,
@@ -165,13 +156,21 @@ export class CalendarComponent implements OnInit, OnChanges {
     const startIndex = Math.min(firstIndex, secondIndex);
     const endIndex = Math.max(firstIndex, secondIndex);
 
-    const weekLen = 7;
-    for (let i = Math.floor(startIndex / weekLen); i <= Math.floor(endIndex / weekLen); i++) {
-      for (let j = 0; j < weekLen; j++) {
+    for (let i = Math.floor(startIndex / 7); i <= Math.floor(endIndex / 7); i++) {
+      for (let j = 0; j < 7; j++) {
         const week = this.weeks[i];
-        const flatIndex = i * weekLen + j;
+        const flatIndex = i * 7 + j;
         if (flatIndex >= startIndex && flatIndex <= endIndex) {
-          CalendarComponent.setRange(week, j, first, second, color);
+          const day = week.days[j];
+          day.selected = true;
+          day.color = color;
+          if (j - 1 >= 0 && week.days[j - 1].selected) {
+            day.before = true;
+            week.days[j - 1].after = true;
+          }
+          if (day.value !== first.value && day.value !== second.value) {
+            day.middle = true;
+          }
         }
       }
     }
@@ -196,7 +195,7 @@ export class CalendarComponent implements OnInit, OnChanges {
   }
 
   mergeWeeks(): CalendarDay[] {
-    return [].concat.apply([], this.weeks);
+    return [].concat.apply([], this.weeks.map(week => week.days));
   }
 
   isCurrentMonth(day: CalendarDay): boolean {
