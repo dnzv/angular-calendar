@@ -84,6 +84,10 @@ $highlighted-day-color: lighten(orangered, 15%);
     border-spacing: 0 4px;
     font-weight: 200;
 
+    .hide {
+      opacity: 0;
+    }
+
     tr th,
     tr td {
       width: 60px;
@@ -152,15 +156,12 @@ $highlighted-day-color: lighten(orangered, 15%);
           }
 
           div.selected {
-            @include selected();
-            &.range {
-              background-color: darken($selected-day-color, 20%);
-            }
+            @include selected(null, inherit);
           }
 
           div:hover {
             cursor: pointer;
-            @include selected(null, $highlighted-day-color);
+            @include selected(null, darken($selected-day-color, 20%));
           }
         }
       }

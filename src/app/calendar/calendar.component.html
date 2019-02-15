@@ -15,11 +15,12 @@
     <tr *ngFor="let week of weeks">
       <td *ngFor="let day of week" [ngClass]="{'current-month': isCurrentMonth(day), 'weekend': day.weekend}">
         <div [ngClass]="{'selected': day.selected, 'before': day.before, 'after': day.after, 'middle': day.middle}"
-             [ngStyle]="{'background-color': day.customColor}"
+             [ngStyle]="{'background-color': day.color}"
              (click)="isCurrentMonth(day) && onSelect(day)"
              (mouseover)="isCurrentMonth(day) && onHover(day)">
-          <div [ngClass]="{'selected': day.selected, 'range': day.range}"
-               [ngStyle]="{'background-color': day.customColor}">{{day.value}}</div>
+          <div [ngClass]="{'selected': day.selected, 'hide': hide && !isCurrentMonth(day)}">
+            {{day.value}}
+          </div>
         </div>
       </td>
     </tr>

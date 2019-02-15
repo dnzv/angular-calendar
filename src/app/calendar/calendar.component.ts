@@ -14,6 +14,7 @@ import { CalendarInput } from '../calendar-input';
 
 interface CalendarDay {
   value?: number;
+  week?: number;
   month?: number;
   selected?: boolean;
   disabled?: boolean;
@@ -22,7 +23,7 @@ interface CalendarDay {
   after?: boolean;
   middle?: boolean;
   range?: boolean;
-  customColor?: string;
+  color?: string;
 }
 
 type Week = CalendarDay[];
@@ -34,15 +35,17 @@ type Week = CalendarDay[];
 })
 export class CalendarComponent implements OnInit, OnChanges {
 
+  private static selectionColor = '#b3ecff';
+
   start: CalendarDay;
   end: CalendarDay;
   first: CalendarDay;
   second: CalendarDay;
-  selected: CalendarDay[] = [];
 
   @Input() month;
   @Input() year;
   @Input() days: CalendarInput[];
+  @Input() hide = false;
 
   calendarStartDate: Date;
   calendarEndDate: Date;
@@ -51,10 +54,10 @@ export class CalendarComponent implements OnInit, OnChanges {
   weekdays = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
   weeks: Week[] = [];
 
-  static setRange(week: Week, index: number, start: CalendarDay, end: CalendarDay, color: string = null) {
+  static setRange(week: Week, index: number, start: CalendarDay, end: CalendarDay, color: string = CalendarComponent.selectionColor) {
     const day = week[index];
     day.selected = true;
-    day.customColor = color;
+    day.color = color;
     if (index - 1 >= 0 && week[index - 1].selected) {
       day.before = true;
       week[index - 1].after = true;
@@ -86,8 +89,11 @@ export class CalendarComponent implements OnInit, OnChanges {
     this.monthName = format(monthStart, 'MMMM', { locale: nl });
     this.monthName = this.monthName.charAt(0).toUpperCase() + this.monthName.slice(1);
 
-    this.weeks = this.initWeeks();
+    this.renderCalender();
+  }
 
+  renderCalender() {
+    this.weeks = this.initWeeks();
     this.setInputDays();
   }
 
@@ -123,11 +129,11 @@ export class CalendarComponent implements OnInit, OnChanges {
   }
 
   onSelect(day: CalendarDay) {
-    this.resetSelected();
+    this.renderCalender();
     if (this.first) {
       this.start = this.first.value <= day.value ? this.first : day;
       this.end = this.first.value > day.value ? this.first : day;
-      this.selected = this.handleSelect(this.start, this.end);
+      this.handleSelect(this.start, this.end);
       this.first = null;
       this.second = null;
     } else {
@@ -138,20 +144,18 @@ export class CalendarComponent implements OnInit, OnChanges {
   }
 
   onHover(day: CalendarDay) {
-    if (this.first) {
+    if (this.first && (this.second || {}).value !== day.value) {
       this.second = day;
-      this.resetSelected();
-      this.selected = this.handleSelect(this.first, this.second);
+      this.renderCalender();
+      this.handleSelect(this.first, this.second);
     }
   }
 
-  handleSelect(first: CalendarDay, second: CalendarDay, color: string = null) {
-    const selected = [...this.selected];
-
+  handleSelect(first: CalendarDay, second: CalendarDay, color: string = CalendarComponent.selectionColor) {
     if (first.value === second.value) {
-      first.selected = true;
-      first.customColor = color;
-      selected.push(first);
+      const day = this.findDay(first.value, first.month);
+      day.selected = true;
+      day.color = color;
       return;
     }
 
@@ -161,34 +165,16 @@ export class CalendarComponent implements OnInit, OnChanges {
     const startIndex = Math.min(firstIndex, secondIndex);
     const endIndex = Math.max(firstIndex, secondIndex);
 
-    first.range = true;
-    second.range = true;
-
     const weekLen = 7;
     for (let i = Math.floor(startIndex / weekLen); i <= Math.floor(endIndex / weekLen); i++) {
       for (let j = 0; j < weekLen; j++) {
         const week = this.weeks[i];
         const flatIndex = i * weekLen + j;
         if (flatIndex >= startIndex && flatIndex <= endIndex) {
-          selected.push(week[j]);
           CalendarComponent.setRange(week, j, first, second, color);
         }
       }
     }
-
-    return selected;
-  }
-
-  resetSelected() {
-    this.selected.forEach(day => {
-      day.selected = false;
-      day.before = false;
-      day.middle = false;
-      day.after = false;
-      day.range = false;
-      day.customColor = null;
-    });
-    this.selected = [];
   }
 
   findIndex(day: CalendarDay): number {
@@ -214,6 +200,6 @@ export class CalendarComponent implements OnInit, OnChanges {
   }
 
   isCurrentMonth(day: CalendarDay): boolean {
-    return day.value && !day.disabled;
+    return day.month === this.month;
   }
 }
